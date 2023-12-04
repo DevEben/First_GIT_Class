@@ -2,24 +2,24 @@ const studentModel = require('../models/model')
 
 // create a new students
 exports.createStudent = async (req, res) => {
-    try {
-      const student = new studentModel(req.body);
-      if (!student) {
-        res.status(400).json({
-          message: "can not create a new student",
-        });
-      }
-      await student.save();
-      res.status(201).json({
-        message: "successfully created a new student",
-        data: student
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: error.message,
+  try {
+    const student = new studentModel(req.body);
+    if (!student) {
+      res.status(400).json({
+        message: "can not create a new student",
       });
     }
-  };
+    await student.save();
+    res.status(201).json({
+      message: "successfully created a new student",
+      data: student
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 
 // get all students
@@ -80,7 +80,7 @@ exports.updateStudent = async (req, res) => {
       res.status(404).json({
         message: `Student with id: ${studentId} is not found.`,
       });
-      return; // Missing return statement added
+      return; 
     }
 
     // check for entity and replace with existing data
@@ -96,6 +96,7 @@ exports.updateStudent = async (req, res) => {
     const studentData = {
       name: req.body.name || student.name,
       stack: req.body.stack || student.stack,
+      isAdmin: req.body.isAdmin || student.isAdmin,
       score: {
         html: scores.html || prevScores.html,
         javascript: scores.javascript || prevScores.javascript,
@@ -128,10 +129,12 @@ exports.deleteStudent = async (req, res) => {
     const student = await studentModel.findById(studentId);
     // check for error
     if (!student){
-        res.status(404).send(`Student with id: ${studentId} is not found.`);
+        res.status(404).json({
+          message: `Student with id: ${studentId} is not found.`
+        });
     }
     // delete the student
-    await studentModel.findByIdAndDelete(student)
+    await studentModel.findByIdAndDelete(studentId)
     return res.status(200).json({
         message: `Student with id: ${studentId} was successfully deleted.`,
         data: student,
@@ -140,4 +143,33 @@ exports.deleteStudent = async (req, res) => {
     res.status(500).json({
         message: err.message});
 }
+} 
+
+
+exports.makeAdmin = async (req, res) => {
+  try {
+
+    // track the user id
+    const studentId = req.params.studentId;
+    // track student with the id gotten
+    const student = await studentModel.findById(studentId);
+    // check for error
+    if (!student) {
+      res.status(404).json({
+        message: `Student with id: ${studentId} is not found.`,
+      });
+      return; 
+    }
+
+    const admin = await studentModel.findByIdAndUpdate(studentId, {isAdmin: true}, {new: true})
+    res.status(200).json({
+      message: `Student with id: ${studentId} has been made Admin.`,
+      data: admin
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message
+    })
+  }
 }
