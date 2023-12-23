@@ -2,17 +2,31 @@ const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema(
     {
-      name: {
+      fullName: {
         type: String,
         required: true,
       },
       stack: {
         type: String,
+        enum: ['Frontend', 'Backend'],
         required: true,
       },
       isAdmin: {
         type: Boolean,
-        default: false,
+      },
+      email: {
+          type: String,
+          unique: true,
+          required: true,
+      },
+      role: {
+        type: String,
+        enum: ['Teacher', 'Student'],
+        required: true,
+      }, 
+      password: {
+        type: String,
+        required: true,
       },
       score: {
         html: {
@@ -27,6 +41,10 @@ const studentSchema = new mongoose.Schema(
         node: {
             type: Number
         }
+      }, 
+      blacklist: {
+        type: Array, 
+        default: [],
       }
 
     },

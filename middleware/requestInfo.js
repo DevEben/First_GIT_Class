@@ -1,3 +1,5 @@
+const express = require('express');
+
 const requestInfo = (req, res, next) => {
     req.date = Date()
 
@@ -6,5 +8,5 @@ const requestInfo = (req, res, next) => {
     next()
 }
 
-module.exports = requestInfo;
 
+module.exports = {requestInfo};

@@ -2,20 +2,26 @@ const express = require("express");
 
 const router = express.Router();
 
-const {createStudent, getAll, getOne, updateStudent, deleteStudent, makeAdmin} = require("../controller/controller");
+const {signUp, logIn, getAll, addStudentScore, signOut, viewStudentScore, } = require("../controller/controller");
+const { authenticate, admin, } = require("../middleware/authentication");
 
-const requestInfo = require('../middleware/requestInfo')
+//endpoint to signUp a new user
+router.post('/sign-up', signUp);
 
-router.post("/create", requestInfo, createStudent);
+//endpoint to logIn a registered user
+router.post('/login', logIn);
 
-router.get("/all", requestInfo, getAll);
+//endpoint to view registered users logged In as an Admin
+router.get('/viewall', admin, getAll);
 
-router.get("/one/:studentId", requestInfo, getOne);
- 
-router.put("/update/:studentId", requestInfo, updateStudent);
+//endpoint to add score to the user data
+router.put('/addscore/:id', admin, addStudentScore);
 
-router.delete("/delete/:studentId", requestInfo, deleteStudent);
+//endpoint to sigout a logged in user
+router.post('/signout', authenticate, signOut)
 
-router.put("/makeAdmin/:studentId", requestInfo, makeAdmin)
+//endpoint to view a logged in student score
+router.get('/viewscore', authenticate, viewStudentScore)
+
 
 module.exports = router;
